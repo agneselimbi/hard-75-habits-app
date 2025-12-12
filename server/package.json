@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "hard-75 challenge",
+  "homepage": "https://github.com/agneselimbi/hard-75-habits-app#readme",
+  "bugs": {
+    "url": "https://github.com/agneselimbi/hard-75-habits-app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agneselimbi/hard-75-habits-app.git"
+  },
+  "license": "MIT",
+  "author": "Agnes ELIMBI MOUDIO",
+  "type": "module",
+  "main": "src/server.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npm test "
+  }
+}
