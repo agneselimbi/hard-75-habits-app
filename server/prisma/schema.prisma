@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+    id              Int                       @id @default(autoincrement())
+    email           String                    @unique @db.VarChar(50)
+    name            String?                   @db.VarChar(100)
+    password        String                    @db.VarChar(50)
+
+    challenges       challenges[]
+    daily_checkins   daily_checkins[]
+    user_pet         user_pet[]
+}
+
+model challenges {
+    id                        Int             @id @default(autoincrement())
+    challenge_name            String          @db.VarChar(200)
+    user_id                   Int  
+    start_date                DateTime        @default(now()) @db.Date   
+    created_at                DateTime        @default(now())      
+    current_day               Int             @default(1)
+    total_habits              Int
+    completed_at              DateTime?
+    status                    String          @default("active")@db.VarChar(20)
+    previous_challenge_id     Int   
+    
+    challenge_owner           users           @relation(fields: [user_id], references : id, onDelete:Cascade)
+    previous_challenges       challenges?      @relation("PreviousChallenge", fields:[previous_challenge_id], references: id, onDelete:SetNull)
+    
+    challenge_habits challenge_habits[]
+    daily_checkins daily_checkins[]
+    next_challenges  challenges[]            @relation("PreviousChallenge")
+
+@@index([user_id, status])
+@@index([previous_challenge_id])
+}
+
+model challenge_habits{
+     id                       Int                   @id @default(autoincrement())
+     challenge_id             Int
+     habit_name               String                @db.VarChar(200)
+     habit_order              Int 
+     created_at               DateTime              @default(now())
+
+    challenge challenges @relation(fields: [challenge_id], references: id, onDelete: Cascade)
+
+@@unique([challenge_id, habit_order])
+@@index([challenge_id])
+}
+
+model daily_checkins{
+    id                          Int          @id @default(autoincrement())
+    user_id                     Int 
+    challenge_id                Int
+    checkin_date                DateTime     @default(now()) @db.Date
+    day_number                  Int
+    // Simple array of completed habit IDs
+    completed_habit_ids         Int[]        @default([])
+    all_habits_completed        Boolean      @default(false)
+    completed_at                DateTime?
+    notes                       String?      @db.VarChar(1000)
+    created_at                  DateTime     @default(now())
+    //Relationships
+    checkin_user      users                  @relation(fields: [user_id], references: id, onDelete: SetNull) 
+    checkin_challenge  challenges            @relation(fields: [challenge_id], references: id, onDelete: Cascade) 
+
+
+@@unique([challenge_id, checkin_date])
+@@index([user_id, checkin_date])  
+}
+
+model pet {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique @db.VarChar(50)
+  stage      Int?
+  stage_name String     @db.VarChar(50)
+  icon_path  String?    @db.VarChar(100)
+  pet_path   user_pet[]
+}
+
+model user_pet {
+  id                        Int             @id @default(autoincrement())
+  user_id                   Int             @default(autoincrement())
+  current_stage             String?         @db.VarChar(50)
+  selected_pet              Int
+  last_checkin              DateTime?       @default(now()) @db.Date
+  created_at                DateTime?       @default(now()) @db.Date
+
+  pet_selection pet                         @relation(fields: [selected_pet], references: [id], onDelete: Cascade)
+  pet_owner     users                       @relation(fields: [user_id], references: id, onDelete: SetNull) 
+}
