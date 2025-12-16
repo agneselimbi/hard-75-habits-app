@@ -18,6 +18,12 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npm test "
+    "test": "jest test "
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "@prisma/client": "^5.22.0",
+    "jest": "^30.2.0",
+    "prisma": "^5.22.0"
   }
 }
