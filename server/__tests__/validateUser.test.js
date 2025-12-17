@@ -22,7 +22,7 @@ describe("Testing validateUser function", () => {
     );
     expect(mockPrisma.users.findUnique).toHaveBeenCalledWith({
       where: { id: 999 },
-    });
+    } );
   });
 
   test("Should return None because user is present in db", async () => {
