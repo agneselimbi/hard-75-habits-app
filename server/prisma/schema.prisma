@@ -29,7 +29,7 @@ model challenges {
     total_habits              Int
     completed_at              DateTime?
     status                    String          @default("active")@db.VarChar(20)
-    previous_challenge_id     Int   
+    previous_challenge_id     Int? 
     
     challenge_owner           users           @relation(fields: [user_id], references : id, onDelete:Cascade)
     previous_challenges       challenges?      @relation("PreviousChallenge", fields:[previous_challenge_id], references: id, onDelete:SetNull)
