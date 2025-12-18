@@ -18,8 +18,14 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest test "
+    "test": "jest test ",
+    "run": "node src/server.js",
+    "dev": "nodemon src/server.js"
   },
+  "prisma": {
+      "seed": "node prisma/seed.js",
+      "migrate": "prisma migrate dev"
+    },  
   "dependencies": {
     "@babel/preset-env": "^7.28.5",
     "@prisma/client": "^5.22.0",
