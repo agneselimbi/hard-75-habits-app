@@ -49,7 +49,7 @@ model challenge_habits{
      habit_order              Int 
      created_at               DateTime              @default(now())
 
-    challenge challenges @relation(fields: [challenge_id], references: id, onDelete: Cascade)
+    challenge                 challenges            @relation(fields: [challenge_id], references: id, onDelete: Cascade)
 
 @@unique([challenge_id, habit_order])
 @@index([challenge_id])
