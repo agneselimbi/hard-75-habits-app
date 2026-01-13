@@ -1,8 +1,14 @@
 import { createMockPrismaClient } from "./mockPrisma";
-import { createMockUser } from "./testData";
+import {
+  createMockUser,
+  createMockChallenge,
+  createMockHabit,
+} from "./testData";
 
 export {
   createMockUser,
+  createMockChallenge,
+  createMockHabit,
   // ... list all your functions
   createMockPrismaClient,
 };

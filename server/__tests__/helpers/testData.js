@@ -75,4 +75,50 @@ export function createMockHabit(overrides = {}) {
   return habits;
 }
 
-test.skip("placeholder", () => {});
+describe("testData helper functions", () => {
+  test("createMockUser creates a user with default properties", () => {
+    const user = createMockUser();
+    expect(user).toHaveProperty("id");
+    expect(user).toHaveProperty("name");
+    expect(user).toHaveProperty("email");
+  });
+
+  test("createMockUser allows overriding default properties", () => {
+    const customName = "Test User";
+    const user = createMockUser({ name: customName });
+    expect(user.name).toBe(customName);
+  });
+
+  test("createMockChallenge creates a challenge with default properties", () => {
+    const challenge = createMockChallenge();
+    expect(challenge).toHaveProperty("id");
+    expect(challenge).toHaveProperty("challenge_name");
+    expect(challenge).toHaveProperty("user_id");
+    expect(challenge).toHaveProperty("total_habits");
+    expect(challenge).toHaveProperty("current_day");
+    expect(challenge).toHaveProperty("status");
+    expect(challenge).toHaveProperty("previous_challenge_id");
+  });
+
+  test("createMockChallenge allows overriding default properties", () => {
+    const customName = "Custom Challenge";
+    const challenge = createMockChallenge({ challenge_name: customName });
+    expect(challenge.challenge_name).toBe(customName);
+  });
+
+  test("createMockHabit creates an array of habits", () => {
+    const habits = createMockHabit();
+    expect(Array.isArray(habits)).toBe(true);
+  });
+
+  test("createMockHabit creates habits with default properties", () => {
+    const habits = createMockHabit();
+    if (habits.length > 0) {
+      const habit = habits[0];
+      expect(habit).toHaveProperty("id");
+      expect(habit).toHaveProperty("habit_name");
+      expect(habit).toHaveProperty("challenge_id");
+      expect(habit).toHaveProperty("habit_order");
+    }
+  });
+});
