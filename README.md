@@ -12,7 +12,22 @@ For this project, I will be using:
 - jest v30.2.1
 - prisma v5.22.0
 4. Installation steps (clone, install, setup DB, run)
-In order to setup the project, you will need to clone 
-5. How to run tests
+In order to setup the project, you will need to clone the gitbub from: 
+    1. Clone repo
+    2. `cd server && npm install`
+    3. Create `.env` with DATABASE_URL
+    4. `npx prisma migrate dev`
+    5. `npx prisma db seed`
+5. How to run tests? 
+    `npm test`
 6. Folder structure explanation
 7. Current project status
+# Sprint 0 ✅ COMPLETE
+- Completion Date: 1/14/2026
+- Total Tests: 57
+- Time Spent: 21 hrs
+- Status: All tests passing
+
+## Sprint 1 🚧 STARTING
+- Start Date: 1/14/2026
+- Expected Duration: 2 weeks
