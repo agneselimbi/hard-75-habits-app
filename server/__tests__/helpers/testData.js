@@ -75,6 +75,19 @@ export function createMockHabit(overrides = {}) {
   return habits;
 }
 
+export function createMockDailyCheckin(overrides = {}) {
+  /** Creates a mock daily checkin object
+   * @returns {object} Mock daily checkin object
+   */
+  return {
+    id: Math.floor(Math.random() * 1000),
+    habit_id: Math.floor(Math.random() * 1000),
+    checkin_date: new Date(),
+    is_completed: Math.random() > 0.5,
+    ...overrides,
+  };
+}
+
 describe("testData helper functions", () => {
   test("createMockUser creates a user with default properties", () => {
     const user = createMockUser();
@@ -89,6 +102,15 @@ describe("testData helper functions", () => {
     expect(user.name).toBe(customName);
   });
 
+  test("generates unique emails", () => {
+    const user1 = createMockUser();
+    const user2 = createMockUser();
+    console.log(user1.email, user2.email);
+    expect(user1.email).not.toBe(user2.email);
+  });
+
+  test;
+
   test("createMockChallenge creates a challenge with default properties", () => {
     const challenge = createMockChallenge();
     expect(challenge).toHaveProperty("id");
@@ -102,8 +124,14 @@ describe("testData helper functions", () => {
 
   test("createMockChallenge allows overriding default properties", () => {
     const customName = "Custom Challenge";
-    const challenge = createMockChallenge({ challenge_name: customName });
+    const challenge = createMockChallenge({
+      challenge_name: customName,
+      current_day: 15,
+      status: "failed",
+    });
     expect(challenge.challenge_name).toBe(customName);
+    expect(challenge.current_day).toBe(15);
+    expect(challenge.status).toBe("failed");
   });
 
   test("createMockHabit creates an array of habits", () => {
@@ -120,5 +148,17 @@ describe("testData helper functions", () => {
       expect(habit).toHaveProperty("challenge_id");
       expect(habit).toHaveProperty("habit_order");
     }
+  });
+  test("createMockDailyCheckin creates a daily checkin with default properties", () => {
+    const checkin = createMockDailyCheckin();
+    expect(checkin).toHaveProperty("id");
+    expect(checkin).toHaveProperty("habit_id");
+    expect(checkin).toHaveProperty("checkin_date");
+    expect(checkin).toHaveProperty("is_completed");
+  });
+  test("createMockDailyCheckin allows overriding default properties", () => {
+    const customHabitId = 123;
+    const checkin = createMockDailyCheckin({ habit_id: customHabitId });
+    expect(checkin.habit_id).toBe(customHabitId);
   });
 });
