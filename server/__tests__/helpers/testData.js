@@ -11,7 +11,8 @@ export function createMockUser(overrides = {}) {
   ];
   const randomIndex = Math.floor(Math.random() * sampleUserName.length);
   const randomName = sampleUserName[randomIndex];
-  const randomEmail = sampleUserEmail[randomIndex];
+  const randomEmail =
+    sampleUserEmail[randomIndex] + Math.floor(Math.random() * 100);
   const ramd = Math.floor(Math.random() * 100);
   return { id: ramd, name: randomName, email: randomEmail, ...overrides };
 }

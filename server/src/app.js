@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import authRoutes from "./routes/authRoutes.js";
-import e from "express";
+import healthRoutes from "./routes/healthRoutes.js";
 
 const app = express();
 
@@ -18,8 +18,6 @@ app.use(cors(corOptions)); //CORS middleware
 app.use("/auth", authRoutes);
 
 // Health check route
-app.get("/", (req, res) => {
-  res.status(200).send("Health Point Check");
-});
+app.use("/health", healthRoutes);
 
 export default app;
