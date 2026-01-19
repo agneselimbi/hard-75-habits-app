@@ -3,6 +3,8 @@ import cors from "cors";
 
 import authRoutes from "./routes/authRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import { notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -19,5 +21,35 @@ app.use("/auth", authRoutes);
 
 // Health check route
 app.use("/health", healthRoutes);
+
+//Test route
+app.get("/test", (req, res, next) => {
+  try {
+    // Some async operation
+    const err = new Error("UnauthorizedError");
+    err.name = "UnauthorizedError";
+    err.status = 401;
+    throw err;
+  } catch (err) {
+    next(err); // Pass to error handler
+  }
+});
+
+app.get("/notfound", (req, res, next) => {
+  try {
+    // Some async operation that results in not found
+    const err = new Error("Not Found");
+    err.status = 404;
+    throw err;
+  } catch (err) {
+    next(err); // Pass to error handler
+  }
+});
+
+// Not found handler
+app.use(notFoundHandler);
+
+// Error handler
+app.use(errorHandler);
 
 export default app;
