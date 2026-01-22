@@ -3,18 +3,20 @@ export function createMockUser(overrides = {}) {
    * @returns {object} Mock user object
    */
   const sampleUserName = ["Alice", "Bob", "Charlie", "Diana"];
-  const sampleUserEmail = [
-    "alice@75hard.com",
-    "bob@75hard.com",
-    "charlie@75hard.com",
-    "diana@75hard.com",
-  ];
   const randomIndex = Math.floor(Math.random() * sampleUserName.length);
   const randomName = sampleUserName[randomIndex];
   const randomEmail =
-    sampleUserEmail[randomIndex] + Math.floor(Math.random() * 100);
+    sampleUserName[randomIndex] +
+    Math.floor(Math.random() * 100) +
+    "@hard75.com";
   const ramd = Math.floor(Math.random() * 100);
-  return { id: ramd, name: randomName, email: randomEmail, ...overrides };
+  return {
+    id: ramd,
+    name: randomName,
+    email: randomEmail,
+    password: "password123",
+    ...overrides,
+  };
 }
 
 export function createMockChallenge(overrides = {}) {
