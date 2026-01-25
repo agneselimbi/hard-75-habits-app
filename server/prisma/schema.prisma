@@ -12,7 +12,7 @@ model users {
     id              Int                       @id @default(autoincrement())
     email           String                    @unique @db.VarChar(50)
     name            String?                   @db.VarChar(100)
-    password        String                    @db.VarChar(50)
+    password        String                    @db.VarChar(200)
 
     challenges       challenges[]
     daily_checkins   daily_checkins[]

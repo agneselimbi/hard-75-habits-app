@@ -7,8 +7,8 @@ export async function notFoundHandler(req, res, next) {
 }
 
 export async function errorHandler(err, req, res, next) {
-  //Log error to console
-  console.error(err.message);
+  // //Log error to console
+  // console.error(err.message);
   //Determine status code
   const code = err.status;
   var errorMessage;

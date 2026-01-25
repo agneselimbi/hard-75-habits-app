@@ -32,4 +32,12 @@ export function createMockPrismaClient() {
   };
 }
 
-test.skip("placeholder", () => {});
+describe.skip("Mock Prisma Client", () => {
+  test("should mock findUnique method", async () => {
+    const mockPrisma = createMockPrismaClient();
+    const mockUser = { id: 1, name: "Test User", email: "<EMAIL>" };
+    mockPrisma.users.findUnique.mockResolvedValue(mockUser);
+    const result = await mockPrisma.users.findUnique({ where: { id: 1 } });
+    expect(result).toEqual(mockUser);
+  });
+});

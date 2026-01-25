@@ -108,7 +108,6 @@ describe("testData helper functions", () => {
   test("generates unique emails", () => {
     const user1 = createMockUser();
     const user2 = createMockUser();
-    console.log(user1.email, user2.email);
     expect(user1.email).not.toBe(user2.email);
   });
 

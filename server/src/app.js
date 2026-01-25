@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
 
-import authRoutes from "./routes/authRoutes.js";
+import { createAuthRoutes } from "./routes/authRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFoundHandler } from "./middleware/errorHandler.js";
+import prisma from "./config/prismaClient.js";
 
 const app = express();
-
+const authRoutes = createAuthRoutes(prisma);
 // Install middleware
 app.use(express.json()); // parse json into objects
 var corOptions = {
