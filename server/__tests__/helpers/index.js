@@ -4,6 +4,7 @@ import {
   createMockChallenge,
   createMockHabit,
 } from "./testData";
+import { generateExpiredToken,generateTestToken } from "./token";
 
 export {
   createMockUser,
@@ -11,4 +12,6 @@ export {
   createMockHabit,
   // ... list all your functions
   createMockPrismaClient,
+  generateExpiredToken,
+  generateTestToken,
 };
