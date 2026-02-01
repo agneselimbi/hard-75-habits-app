@@ -5,36 +5,36 @@ describe("Testing validateUser function", () => {
   //Test 1
   test("should throw error when userId is null", async () => {
     //Arrange
-    const userId = null;
+    const userEmail = null;
     //Act & Assert
-    await expect(validateUser(userId)).rejects.toThrow("User ID is required");
+    await expect(validateUser(userEmail)).rejects.toThrow("User email is required");
   });
   test("should throw error when user does not exist", async () => {
     //Arrange
-    const userId = 999;
+    const userEmail = 'testuser@example.com';
     //Create a mock Prisma client
     const mockPrisma = {
       users: {
         findUnique: jest.fn().mockResolvedValue(null),
       },
     };
-    await expect(validateUser(userId, mockPrisma)).rejects.toThrow(
-      `User with id ${userId} not found`,
+    await expect(validateUser(userEmail, mockPrisma)).rejects.toThrow(
+      `User with email ${userEmail} not found`,
     );
     expect(mockPrisma.users.findUnique).toHaveBeenCalledWith({
-      where: { id: 999 },
+      where: { email: 'testuser@example.com' },
     });
   });
 
   test("Should return None because user is present in db", async () => {
-    const userId = 5;
-    const fakeUser = createMockUser({ id: userId });
+    const userEmail = 'testuser@example.com';
+    const fakeUser = createMockUser({ eamil:userEmail });
     //Create a mock Prisma client
     const mockPrisma = createMockPrismaClient();
     mockPrisma.users.findUnique.mockResolvedValue(fakeUser);
-    await expect(validateUser(userId, mockPrisma)).resolves.toEqual(undefined);
+    await expect(validateUser(userEmail, mockPrisma)).resolves.toEqual(undefined);
     expect(mockPrisma.users.findUnique).toHaveBeenCalledWith({
-      where: { id: 5 },
+      where: { email: 'testuser@example.com' },
     });
   });
 });

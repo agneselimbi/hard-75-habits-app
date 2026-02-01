@@ -3,12 +3,14 @@ import cors from "cors";
 
 import { createAuthRoutes } from "./routes/authRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
+import { createProtectedRoutes } from "./routes/protected.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFoundHandler } from "./middleware/errorHandler.js";
 import prisma from "./config/prismaClient.js";
 
 const app = express();
 const authRoutes = createAuthRoutes(prisma);
+const protectedRoutes = createProtectedRoutes(prisma)
 
 // Install middleware
 app.use(express.json()); // parse json into objects
@@ -20,6 +22,7 @@ app.use(cors(corOptions)); //CORS middleware
 
 // Define routes
 app.use("/auth", authRoutes);
+app.use("/users", protectedRoutes);
 
 // Health check route
 app.use("/health", healthRoutes);
@@ -44,7 +47,7 @@ app.get("/notfound", (req, res, next) => {
     err.status = 404;
     throw err;
   } catch (err) {
-    next(err); // Pass to error handler
+    next(err); // Pass to notFound handler
   }
 });
 

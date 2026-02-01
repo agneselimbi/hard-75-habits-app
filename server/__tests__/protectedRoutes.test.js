@@ -1,0 +1,43 @@
+import request from 'supertest';
+import app from '../src/app.js'; 
+import createMockPrismaClient from './helpers/mockPrisma.js'
+import { createMockUser } from './helpers/testData.js';
+
+
+// Returns 401 without token
+// Return 401 with invalid token
+// Returns 200 with valid token
+// Returns correct user data 
+// Doesn't return sensitive data (like password)    
+
+describe("Validating the authentication middleware on protected routes", () => {
+    it ("Returns 401 without token", async () => {
+        const response = await request(app)
+            .get("/users/profile");
+        expect(response.status).toBe(401);
+        expect(response.body.error.message).toBe("No token provided");
+    });
+    it ("Returns 401 with invalid token", async () => {
+        const response = await request(app)
+            .get("/users/profile")
+            .set("Authorization", "Bearer invalidtoken");
+        expect(response.status).toBe(401);
+        expect(response.body.error.message).toBe("Invalid token");
+    });
+    it ('Return 200 with valid token', async () => {
+
+        // Login with valid credentials 
+        const loginResponse = await request(app)
+            .post("/auth/login")
+            .send({email:"alice@hard75.com", password:"test1234"});
+        const token = loginResponse.body.token;
+        console.log("Obtained token:",token);
+        expect(token).toBeDefined();
+
+        // Access protected routes 
+        const protectedResponse = await request(app).get("/users/profile").set('Authorization',`Bearer ${token}`).expect(200);
+        expect(protectedResponse.body.user.email).toBeDefined();
+        expect(protectedResponse.body.user.id).toBeDefined();
+        expect(protectedResponse.body.user.password).not.toBeDefined();
+    })
+});

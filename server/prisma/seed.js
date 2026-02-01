@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import { hashPassword } from "../src/utils/password.js";
 const prisma = new PrismaClient();
 
 function subtractDaysFromDate(dateInput, days) {
@@ -9,6 +9,12 @@ function subtractDaysFromDate(dateInput, days) {
 }
 
 async function main() {
+  // Delete existing data
+  await prisma.daily_checkins.deleteMany({});
+  await prisma.challenge_habits.deleteMany({});
+  await prisma.challenges.deleteMany({});
+  await prisma.users.deleteMany({});
+
   // Create sample user data
   const alice = await prisma.users.upsert({
     where: { email: "alice@hard75.com" },
@@ -16,7 +22,7 @@ async function main() {
     create: {
       email: "alice@hard75.com",
       name: "Alice",
-      password: "test1234",
+      password: await hashPassword("test1234"),
     },
   });
   const bob = await prisma.users.upsert({
@@ -25,7 +31,7 @@ async function main() {
     create: {
       email: "bob@hard75.com",
       name: "Bob",
-      password: "test1234",
+      password: await hashPassword("test1234"),
     },
   });
   const charlie = await prisma.users.upsert({
@@ -34,7 +40,7 @@ async function main() {
     create: {
       email: "charlie@hard75.com",
       name: "Charlie",
-      password: "test1234",
+      password: await hashPassword("test1234"),
     },
   });
   //Create sample challenges

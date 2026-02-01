@@ -29,5 +29,4 @@ export async function errorHandler(err, req, res, next) {
     };
   }
   res.status(errorMessage.status).json(errorMessage);
-  next(err);
 }

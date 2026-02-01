@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
-import config from "../config/config";
-
-
+import config from "../config/config.js";
 
 export async function authenticateMiddleware(req, res, next) {
   //Extract token from headers
@@ -9,7 +7,6 @@ export async function authenticateMiddleware(req, res, next) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: { message: "No token provided" } });
   }
-
   try {
     //Verify token validity
     const token = authHeader.split(" ")[1];

@@ -24,12 +24,12 @@ describe("Testing password utilities", () => {
     const password = "password123";
     await expect(
       verifyPassword(password, await hashPassword(password)),
-    ).resolves.toEqual(undefined);
+    ).resolves.toEqual(true);
   });
-  test("verifyPassword should throw error for incorrect correct password", async () => {
+  test("verifyPassword should return false for incorrect password", async () => {
     await expect(
       verifyPassword("password1234", await hashPassword("password123")),
-    ).rejects.toThrow("Incorrect password provided");
+    ).resolves.toEqual(false);
   });
   test("verifyPassword should throw error for missing inputs", async () => {
     await expect(
