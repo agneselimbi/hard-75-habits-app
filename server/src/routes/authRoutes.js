@@ -1,14 +1,25 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 
 import config from "../config/config.js";
 import validateRegistration from "../utils/validationRegistration.js";
 import { verifyPassword, hashPassword } from "../utils/password.js";
 
+
+
 export function createAuthRoutes(prisma) {
   const router = express.Router();
+  const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: {
+    message: "Too many login attempts from this IP, please try again after 15 minutes",
+    status: 429,
+  },
+});
   // Define routes
-  router.post("/login", async (req, res) => {
+  router.post("/login", authLimiter, async (req, res) => {
     try {
     console.log("Login attempt for:", req.body);
     const { email, password } = req.body;
@@ -73,7 +84,7 @@ export function createAuthRoutes(prisma) {
   router.get("/login", (req, res) => {
     res.status(200).json({ message: "Login endpoint is working" });
   });
-  router.post("/register", async (req, res) => {
+  router.post("/register", authLimiter, async (req, res) => {
     // Registration logic here
     const user = req.body;
     const errors = [];

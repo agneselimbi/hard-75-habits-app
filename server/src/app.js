@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 
 import { createAuthRoutes } from "./routes/authRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
@@ -8,6 +9,8 @@ import { createChalengeRoutes } from "./routes/protected.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFoundHandler } from "./middleware/errorHandler.js";
 import prisma from "./config/prismaClient.js";
+
+
 
 const app = express();
 const authRoutes = createAuthRoutes(prisma);
@@ -20,6 +23,7 @@ var corOptions = {
   origin: "*",
   credentials: true,
 };
+app.use(helmet()); // set secure HTTP headers
 app.use(cors(corOptions)); //CORS middleware
 
 // Define routes
