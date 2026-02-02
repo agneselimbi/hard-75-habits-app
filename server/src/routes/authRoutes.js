@@ -33,8 +33,6 @@ export function createAuthRoutes(prisma) {
           }
 
     console.log("User found, verifying password");
-    console.log("User password hash:",await hashPassword(password));
-    console.log("Returned user password hash:",returnedUser.password);
     // Verify password
     const passwordMatch = await verifyPassword(password,returnedUser.password);
     if (!passwordMatch) {       
