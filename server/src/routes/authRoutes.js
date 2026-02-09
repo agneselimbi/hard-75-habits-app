@@ -81,9 +81,6 @@ export function createAuthRoutes(prisma) {
   }
     });
   
-  router.get("/login", (req, res) => {
-    res.status(200).json({ message: "Login endpoint is working" });
-  });
   router.post("/register", authLimiter, async (req, res) => {
     // Registration logic here
     const user = req.body;

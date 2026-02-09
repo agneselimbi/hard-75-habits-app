@@ -28,6 +28,14 @@ In order to setup the project, you will need to clone the gitbub from:
 - Time Spent: 21 hrs
 - Status: All tests passing
 
-## Sprint 1 🚧 STARTING
+## Sprint 1 🚧 User Management 
 - Start Date: 1/14/2026
 - Expected Duration: 2 weeks
+- Total Tests: 125 
+- Time Spent : Unknown
+- Status: All tests passing, need to circle back to add access token for long-live credentials
+- Completion date: 2/1/2026
+
+## Sprint 2 🚧 STARTING
+- Start Date: 2/3/2026
+- Expected Duration: 3 weeks
