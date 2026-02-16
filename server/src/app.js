@@ -5,7 +5,7 @@ import helmet from "helmet";
 import { createAuthRoutes } from "./routes/authRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import { createUserRoutes} from "./routes/protected.js";
-import { createChallengeRoutes } from "./routes/protected.js";
+import { createChallengeRoutes } from "./routes/challengeRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFoundHandler } from "./middleware/errorHandler.js";
 import prisma from "./config/prismaClient.js";

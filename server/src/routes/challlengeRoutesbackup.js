@@ -1,7 +1,5 @@
-import express from "express";
-
-import { authenticateMiddleware } from "../middleware/authenticateMiddleware.js";
-import { Prisma } from "@prisma/client";
+import express from "express"
+import { authenticateMiddleware } from "../middleware/authenticateMiddleware";
 
 export function createChallengeRoutes(prisma) {
     const router = express.Router();
@@ -107,10 +105,14 @@ export function createChallengeRoutes(prisma) {
             });
         }
     });
- 
+    console.log("✅ Challenge routes being registered");
+       
     router.post("/:id/habits", authenticateMiddleware, async (req, res) => {
-
+        console.log("🎯 HIT POST /:id/habits");
+        console.log("Params:", req.params);
+        console.log("Path:", req.path);
         const challenge_id = parseInt(req.params.id, 10);
+        
         if (isNaN(challenge_id)) {
             return res.status(400).json({
                 error: { message: "Need to provide a valid challenge id" }

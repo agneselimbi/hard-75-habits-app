@@ -149,7 +149,7 @@ describe("Validating create challenges route", () =>{
 
         // Create test challenge 
         // const createdChallenge = await request(app).post("/challenges/create").set('Authorization', `Bearer ${token1}`).send({challenge_name: "Test Challenge", total_habits:4});
-        const response = (await request(app).get("/challenges/list").set('Authorization', `Bearer ${token1}`));
+        const response = await request(app).get("/challenges/list").set('Authorization', `Bearer ${token1}`);
         
         const testChallenge = response.body.data.find(
                 challenge => 
@@ -285,7 +285,7 @@ describe("Validating get challenge/:id routes", () => {
     })
 })
 
-describe.only("Validating get challenge/:id/habits routes", () => {
+describe("Validating post challenge/:id/habits routes", () => {
     let mockapp; 
     let mockPrisma;
     let token;
@@ -480,4 +480,139 @@ describe.only("Validating get challenge/:id/habits routes", () => {
 
 })
 
+describe.only("Validating put /:challengeId/habits/:habitId routes", () => {
+    let mockapp; 
+    let mockPrisma;
+    let token;
+    let userId;
+    beforeAll(async() => {
+        mockapp = express();
+        mockPrisma = createMockPrismaClient();
+        const authRoutes = createAuthRoutes(mockPrisma);
+        const challengeRoutes = createChallengeRoutes(mockPrisma);
+        const userRoutes = createUserRoutes(mockPrisma);
+        mockapp.use(express.json()); // parse json into objects
+        mockapp.use("/auth", authRoutes);        
+        mockapp.use("/users", userRoutes);
+        mockapp.use("/challenges", challengeRoutes);
 
+        // Mock user for both login and profile 
+        mockPrisma.users.findUnique.mockResolvedValue({email:"alice@hard75.com", password:"$2b$10$5S.IAkN8GcDG543HHHjW/O.Bh3nTf10Y/kIljDZzG7j6Nl65bk0t.", id:1, name: "Alice"});
+
+        // Login user 
+        const loginResp = await request(mockapp).post("/auth/login").send({email:"alice@hard75.com", password:"test1234"});
+        
+        token = loginResp.body.token;
+
+        // Collect user information 
+        const returnedUser = await request(mockapp).get("/users/profile")
+        .set("Authorization", `Bearer ${token}`);
+            
+        userId = returnedUser.body.user.id;
+        expect(userId).toBeDefined();
+    })
+
+    it("should return 400 if challengeId is invalid", async() => {
+        const response = await request(mockapp).put("/challenges/'1'/habits/12").set("Authorization", `Bearer ${token}`).send({habit_name: "updated Habit"});
+        expect(response.status).toBe(400);       
+        expect(response.body.error.message).toBe( `Need to provide a valid challenge id`)
+    });
+    it("should return 400 if habitId is invalid", async() => {
+        const response = await request(mockapp).put("/challenges/1/habits/twelve").set("Authorization", `Bearer ${token}`).send({habit_name: "updated Habit"});
+        expect(response.status).toBe(400);
+        
+        expect(response.body.error.message).toBe( 'Need to provide a valid habit id')
+    });
+    it("should return 400 if no habit is provided", async() => {
+        const response = await await request(mockapp).put("/challenges/1/habits/12").set("Authorization", `Bearer ${token}`).send({});
+        console.log(response.body)
+        expect(response.status).toBe(400);
+        expect(response.body.error.message).toBe( "Need to provide a valid habit name")
+    });
+    it("should return 404 if the challenge/habit is non existent", async() => {
+        mockPrisma.challenges.findFirst.mockResolvedValue(null);
+        const response = await request(mockapp).put("/challenges/1/habits/3").set("Authorization", `Bearer ${token}`).send({habit_name: "updated_habit"})
+        expect(response.status).toBe(404);
+        expect(response.body.error.message).toBe("Habit not found")
+    })
+    it("should return 403 if the habit belongs to a different user", async() => {
+         mockPrisma.challenges.findFirst.mockResolvedValue( {id:1, challenge_name: "Test challenge", user_id: 12, current_day:1, total_habits:3, challenge_habits: [{
+            habit_name: "Habit 3",
+            habit_order : 3
+        }]});
+        await request(mockapp).put("/challenges/1/habits/3").set("Authorization", `Bearer ${token}`).send({habit_name: "updated_habit"})
+        const response = await request(mockapp).put("/challenges/13/habits/3").set("Authorization", `Bearer ${token}`).send({habit_name: "updated_habit"});
+       expect(response.status).toBe(403);
+       expect(response.body.error.message).toBe("User is not authorized to access given challenge data")
+   })
+    it("should return 400 if we are not on day 1", async() => {
+        mockPrisma.challenges.findFirst.mockResolvedValue( {id:1, challenge_name: "Test challenge", user_id: 1, current_day:12, total_habits:3, challenge_habits: [{
+            habit_name: "Habit 3",
+            habit_order : 3
+        }]});
+        const response = await request(mockapp).put("/challenges/1/habits/3").set("Authorization", `Bearer ${token}`).send({habit_name: "updated_habit"})
+    
+        expect(response.status).toBe(400);
+        expect(response.body.error.message).toBe( "Unable to modify habit name beyond day 1")
+    })
+    it ("should handle db error gracefully", async() => {
+        mockPrisma.challenges.findFirst.mockResolvedValue( {id:1, challenge_name: "Test challenge", user_id: 1, current_day:1, total_habits:3, challenge_habits: [{
+            habit_name: "Habit 3",
+            habit_order : 3
+        }]});
+        mockPrisma.challenge_habits.update.mockRejectedValue(new Prisma.PrismaClientKnownRequestError(
+                    'Connection lost',
+                    { code: 'P1001', clientVersion: '5.0.0' }
+        ));
+        const response = await request(mockapp).put("/challenges/1/habits/3").set("Authorization", `Bearer ${token}`).send({habit_name: "updated_habit"})
+        expect(response.status).toBe(500);
+        expect(response.body.error.message).toBe("Unable to update habit name");
+        expect (mockPrisma.challenge_habits.update).toHaveBeenCalledWith({
+            where : {id : 3},
+            data: {
+                habit_name: "updated_habit"
+            }
+        }
+        )
+    })
+    it ("should return 200 if habit successfully created", async() => {
+        mockPrisma.challenges.findFirst.mockResolvedValue( {id:1, challenge_name: "Test challenge", user_id: 1, current_day:1, total_habits:3, challenge_habits: [{
+            habit_name: "Habit 3",
+            habit_order : 3
+        }]});
+        mockPrisma.challenge_habits.update.mockResolvedValue({id: 3, habit_name: 3, habit_order:3})
+        const response = await request(mockapp).put("/challenges/1/habits/3").set("Authorization", `Bearer ${token}`).send({habit_name: "updated_habit"})
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe("Successfully updated habit name");
+        expect(mockPrisma.challenge_habits.update).toHaveBeenCalledWith({
+            where: {id: 3},
+            data : {
+                habit_name: "updated_habit"
+            }
+        })
+    })
+  })  
+
+// descibe.skip("Created challenge habits should appear in the database after creation", () => {
+//     beforeAll( async() => {
+//         // Login user 
+//         const loginResp = await request(app).post("/auth/login").send({email:"alice@hard75.com", password:"test1234"});
+        
+//         token = loginResp.body.token;
+
+//         // Collect user information 
+//         const returnedUser = await request(app).get("/users/profile")
+//                                                 .set("Authorization", `Bearer ${token}`);
+            
+//         userId = returnedUser.body.user.id; 
+
+//         // create challenge 
+//         const challenge = await request(app).post("/challenges/create")
+//                 .set("Authorization", `Bearer ${token}`)
+//                 .send({challenge_name: "Test challenge", total_habits:4})
+
+//      })
+
+
+//     it("created habits should appear in ")
+// })
