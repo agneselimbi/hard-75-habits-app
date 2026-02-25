@@ -14,7 +14,7 @@ export async function authenticateMiddleware(req, res, next) {
     req.user = decoded;
     next();
   } catch (error) {
-    console.log("Error", error.name);
+    console.log("Auth Error", error.name);
     if (error.name === "TokenExpiredError") {
       return res.status(401).json({ error: { message: "Expired token" } });
     }

@@ -1,7 +1,7 @@
 import express from "express";
 
 import { authenticateMiddleware } from "../middleware/authenticateMiddleware.js";
-import { Prisma } from "@prisma/client";
+
 
 export function createUserRoutes(prisma) {
     const router = express.Router();
@@ -18,7 +18,6 @@ export function createUserRoutes(prisma) {
             }
         })
     });
-
     router.put("/profile", authenticateMiddleware, async ( req, res) => {
         try {
         // Update user data in dabase 
