@@ -7,7 +7,6 @@ import { createChallengeRoutes } from "../src/routes/challengeRoutes.js";
 import { createUserRoutes } from "../src/routes/userRoutes.js";
 import { createAuthRoutes } from "../src/routes/authRoutes.js";
 import { createMockPrismaClient } from "./helpers/mockPrisma.js";
-import { createMockUser } from "./helpers/testData.js";
 
 describe("Validating list challenges route", () => {
   it("should return 401 without token", async () => {

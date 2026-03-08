@@ -4,22 +4,20 @@ import helmet from "helmet";
 
 import { createAuthRoutes } from "./routes/authRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
-import { createUserRoutes} from "./routes/protected.js";
+import { createUserRoutes } from "./routes/protected.js";
 import { createChallengeRoutes } from "./routes/challengeRoutes.js";
-import {createDailyCheckins} from "./routes/dailyCheckins.js";
+import { createDailyCheckinsRoutes } from "./routes/dailyCheckins.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFoundHandler } from "./middleware/errorHandler.js";
 
 import prisma from "./config/prismaClient.js";
 
-
-
 const app = express();
 const authRoutes = createAuthRoutes(prisma);
 const userRoutes = createUserRoutes(prisma);
-const challengeRoutes = createChallengeRoutes(prisma); 
-const checkinRoutes = createDailyCheckins(prisma);
+const challengeRoutes = createChallengeRoutes(prisma);
+const checkinRoutes = createDailyCheckinsRoutes(prisma);
 
 // Install middleware
 app.use(express.json()); // parse json into objects
