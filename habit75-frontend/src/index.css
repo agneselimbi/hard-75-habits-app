@@ -1,0 +1,163 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap");
+
+/* Or use a local pixel font */
+@font-face {
+  font-family: "PixelFont";
+  src: url("./fonts/pixel-font.woff2") format("woff2");
+}
+
+:root {
+  /* Typography */
+  --font-heading: "Press Start 2P", "Courier New", monospace;
+  --font-body: "Nunito", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Colors */
+  --color-background: #fff8e8;
+  --color-primary: #ff9b9b;
+  --color-secondary: #a8e6cf;
+  --color-text: #2d3e50;
+  --color-accent: #b4a7d6;
+
+  /* Shadows */
+  --shadow-playful: 4px 4px 0px rgba(45, 62, 80, 0.2);
+  --shadow-chunky: 6px 6px 0px rgba(45, 62, 80, 0.3);
+  --shadow-soft: 0 8px 16px rgba(180, 167, 214, 0.2);
+
+  /* Border radius */
+  --radius-small: 8px;
+  --radius-medium: 16px;
+  --radius-large: 24px;
+}
+
+/* Typography styles */
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: normal;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+h3 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+body,
+p,
+span,
+div {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: 1rem;
+  }
+  h2 {
+    font-size: 0.875rem;
+  }
+  h3 {
+    font-size: 0.75rem;
+  }
+}
+
+/* Button component styles */
+.button {
+  font-family: var(--font-body);
+  font-weight: 600;
+  padding: 12px 24 px;
+  border-radius: var(--radius-medium);
+  border: 3px solid var(--color-text);
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  box-shadow: var(--shadow-chunky);
+  transform: translateY(0);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 0px rgba(45, 62, 80, 0.3);
+}
+
+.button:active {
+  transform: translateY(2px);
+  box-shadow: 2px 2px 0px rgba(45, 62, 80, 0.3);
+}
+/* Button variants */
+.button--secondary {
+  background-color: var(--color-secondary);
+  border-color: var(--color-text);
+}
+
+.button--accent {
+  background-color: var(--color-accent);
+  border-color: var(--color-text);
+}
+
+.button--large {
+  padding: 16px 32px;
+  font-size: 1rem;
+  border-width: 4px;
+}
+
+/* Cards components */
+.card {
+  background-color: white;
+  border-radius: var(--radius-large);
+  border: 3px solid var(--color-text);
+  box-shadow: var(--shadow-playful);
+  padding: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+}
+
+.card--habit {
+  border-color: var(--color-secondary);
+  background: linear-gradient(135deg, white 0%, var(--color-background) 100%);
+}
+
+.card--challenge {
+  border-color: var(--color-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.card--challenge::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 155, 155, 0.1) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
+}
