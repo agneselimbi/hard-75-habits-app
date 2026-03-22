@@ -1,3 +1,5 @@
+import { getStartOfDay } from "../../src/utils/dateHelpers.js";
+
 export function createMockUser(overrides = {}) {
   /** Creates a mock user object with random name and email
    * @returns {object} Mock user object
@@ -36,7 +38,7 @@ export function createMockChallenge(overrides = {}) {
     id: Math.floor(Math.random() * 1000),
     challenge_name: sampleChallengeNames[randomIndex],
     user_id: Math.floor(Math.random() * 100),
-    total_habits: Math.floor(Math.random() * 1000),
+    total_habits: Math.floor(Math.random() * 10),
     current_day: 10,
     status: "active",
     previous_challenge_id: null,
@@ -44,7 +46,11 @@ export function createMockChallenge(overrides = {}) {
   };
 }
 
-export function createMockHabit(overrides = {}) {
+export function createMockHabit(
+  numberHabits = null,
+  challengeId = null,
+  overrides = {},
+) {
   /** Creates a mock habit object
    * @returns {object} Mock habit object
    */
@@ -63,13 +69,18 @@ export function createMockHabit(overrides = {}) {
     "learn spanish for 15 minutes",
     "practice coding for 30 minutes",
   ];
-  const numberHabits = Math.floor(Math.random() * habitNames.length);
+  if (isNaN(numberHabits) || numberHabits === null) {
+    const numberHabits = Math.floor(Math.random() * habitNames.length);
+  }
+  if (isNaN(challengeId) || challengeId === null) {
+    const challengeId = Math.floor(Math.random() * 1000);
+  }
   const habits = [];
   for (let i = 0; i < numberHabits; i++) {
     const habit = {
       id: Math.floor(Math.random() * 1000),
       habit_name: habitNames[i],
-      challenge_id: Math.floor(Math.random() * 1000),
+      challenge_id: challengeId,
       habit_order: i + 1,
       ...overrides,
     };
@@ -84,9 +95,10 @@ export function createMockDailyCheckin(overrides = {}) {
    */
   return {
     id: Math.floor(Math.random() * 1000),
-    habit_id: Math.floor(Math.random() * 1000),
-    checkin_date: new Date(),
-    is_completed: Math.random() > 0.5,
+    user_id: Math.floor(Math.random() * 50),
+    challenge_id: Math.floor(Math.random() * 100),
+    checkin_date: getStartOfDay(new Date()),
+    all_habits_completed: Math.random() > 0.5,
     ...overrides,
   };
 }
@@ -154,9 +166,9 @@ describe("testData helper functions", () => {
   test("createMockDailyCheckin creates a daily checkin with default properties", () => {
     const checkin = createMockDailyCheckin();
     expect(checkin).toHaveProperty("id");
-    expect(checkin).toHaveProperty("habit_id");
+    expect(checkin).toHaveProperty("user_id");
     expect(checkin).toHaveProperty("checkin_date");
-    expect(checkin).toHaveProperty("is_completed");
+    expect(checkin).toHaveProperty("all_habits_completed");
   });
   test("createMockDailyCheckin allows overriding default properties", () => {
     const customHabitId = 123;
