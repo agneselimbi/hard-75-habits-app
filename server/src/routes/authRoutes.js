@@ -6,80 +6,84 @@ import config from "../config/config.js";
 import validateRegistration from "../utils/validationRegistration.js";
 import { verifyPassword, hashPassword } from "../utils/password.js";
 
-
 export function createAuthRoutes(prisma) {
   const router = express.Router();
   const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // limit each IP to 10 requests per windowMs
-  message: {
-    message: "Too many login attempts from this IP, please try again after 15 minutes",
-    status: 429,
-  },
-});
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: {
+      message:
+        "Too many login attempts from this IP, please try again after 15 minutes",
+      status: 429,
+    },
+  });
   // Define routes
   router.post("/login", authLimiter, async (req, res) => {
     try {
-    console.log("Login attempt for:", req.body);
-    const { email, password } = req.body;
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Login failed",
-        errors: ["Email and password are required"]
+      console.log("Login attempt for:", req.body);
+      const { email, password } = req.body;
+      // Validate input
+      if (!email || !password) {
+        return res.status(400).json({
+          message: "Login failed",
+          errors: ["Email and password are required"],
+        });
+      }
+      // Find user (SINGLE database query)
+      console.log("Looking up user:", email);
+      const returnedUser = await prisma.users.findUnique({
+        where: { email },
       });
-    }
-    // Find user (SINGLE database query)
-    console.log("Looking up user:", email);
-    const returnedUser = await prisma.users.findUnique({
-      where: { email }
-    });
-    // User not found 
-    if (!returnedUser) {
-      console.error("User not found:", email);
-      return res.status(404).json({
-        message: "Login failed",
-        errors: ["Invalid credentials"]});
-          }
+      // User not found
+      if (!returnedUser) {
+        console.error("User not found:", email);
+        return res.status(404).json({
+          message: "Login failed",
+          errors: ["Invalid credentials"],
+        });
+      }
 
-    console.log("User found, verifying password");
-    // Verify password
-    const passwordMatch = await verifyPassword(password,returnedUser.password);
-    if (!passwordMatch) {       
-      return  res.status(401).json({
-        message: "Login failed",
-        errors: ["Incorrect password"],
+      console.log("User found, verifying password");
+      // Verify password
+      const passwordMatch = await verifyPassword(
+        password,
+        returnedUser.password,
+      );
+      if (!passwordMatch) {
+        return res.status(401).json({
+          message: "Login failed",
+          errors: ["Incorrect password"],
+        });
+      }
+      // Generate token
+      console.log("Generating token for user:", email);
+      const token = jwt.sign(
+        { id: returnedUser.id, email: returnedUser.email },
+        config.jwt.secret,
+        { expiresIn: "1h" },
+      );
+      // send token as cookie to be saved in the browser
+      res.cookie("token", token, {
+        httpOnly: true, // prevents JS access (XSS protection)
+        secure: config.env === "production", // only send over HTTPS in prod
+        sameSite: "strict",
+        maxAge: 60 * 60 * 1000, // 1 hour
       });
-    }
-    // Generate token
-    console.log("Generating token for user:", email);
-    const token = jwt.sign(
-      { id: returnedUser.id,  email: returnedUser.email },
-      config.jwt.secret,
-      { expiresIn: "1h" }
-    );
-    // send token as cookie to be saved in the browser
-    res.cookie("token", token, {
-      httpOnly: true, // prevents JS access (XSS protection)
-      secure: config.env === "production", // only send over HTTPS in prod
-      sameSite: "strict",
-      maxAge: 60 * 60 * 1000, // 1 hour
-    });
 
-    console.log("Login successful for:", email);
-    res.status(200).json({
-      message: "Login successful",
-      token: token,
-    });
+      console.log("Login successful for:", email);
+      res.status(200).json({
+        message: "Login successful",
+        token: token,
+      });
     } catch (error) {
-    console.error("Login error:", error);
-    return res.status(500).json({
-      message: "Internal server error",
-      errors: ["An error occurred during login"],
-    });
-  }
-    });
-  
+      console.error("Login error:", error);
+      return res.status(500).json({
+        message: "Internal server error",
+        errors: ["An error occurred during login"],
+      });
+    }
+  });
+
   router.post("/register", authLimiter, async (req, res) => {
     // Registration logic here
     const user = req.body;
@@ -119,12 +123,13 @@ export function createAuthRoutes(prisma) {
       console.log("Registered user Id:", registeredUser?.id);
       // Generate token
       const token = jwt.sign(
-        { id: registeredUser.id, 
-          name: registeredUser.name, 
-          email: registeredUser.email 
+        {
+          id: registeredUser.id,
+          name: registeredUser.name,
+          email: registeredUser.email,
         },
         config.jwt.secret,
-        { expiresIn: "1h" }
+        { expiresIn: "1h" },
       );
       // send token as cookie to be saved in the browser
       res.cookie("token", token, {
@@ -139,7 +144,6 @@ export function createAuthRoutes(prisma) {
           id: registeredUser.id,
           name: user.name,
           email: user.email,
-          
         },
         token: token,
       });
@@ -151,5 +155,22 @@ export function createAuthRoutes(prisma) {
       });
     }
   });
+
+  router.post("/logout", authLimiter, async (req, res) => {
+    //clear the cookie
+    res.clearCookie("token", {
+      expires: new Date(0),
+      path: "/",
+    });
+  });
+
+  router.post("/me", authLimiter, async(req,res) => {
+     try {
+      const token = 
+     } catch (error) {
+      
+     }
+  })
+
   return router;
 }

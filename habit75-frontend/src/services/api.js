@@ -7,6 +7,7 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  withCredentials: true,
 });
 
 // Add interceptors
@@ -29,7 +30,6 @@ axiosInstance.interceptors.response.use(
   },
   function onRejected(error) {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
       window.location.href("/login");
     }
     return Promise.reject(error);
