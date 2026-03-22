@@ -7,7 +7,6 @@ import validateRegistration from "../utils/validationRegistration.js";
 import { verifyPassword, hashPassword } from "../utils/password.js";
 
 
-
 export function createAuthRoutes(prisma) {
   const router = express.Router();
   const authLimiter = rateLimit({
