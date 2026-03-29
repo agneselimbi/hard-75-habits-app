@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 
 import { createAuthRoutes } from "./routes/authRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
@@ -22,17 +23,18 @@ const checkinRoutes = createDailyCheckinsRoutes(prisma);
 // Install middleware
 app.use(express.json()); // parse json into objects
 var corOptions = {
-  origin: "*",
+  origin: "http://localhost:5173",
   credentials: true,
 };
 app.use(helmet()); // set secure HTTP headers
 app.use(cors(corOptions)); //CORS middleware
+app.use(cookieParser()); //parse cookie objects
 
 // Define routes
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/challenges", challengeRoutes);
-app.use("/checkin", checkinRoutes);
+app.use("/ checkin", checkinRoutes);
 
 // Health check route
 app.use("/health", healthRoutes);

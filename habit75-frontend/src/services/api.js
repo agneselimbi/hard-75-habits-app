@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || "/api",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
@@ -13,25 +13,25 @@ const axiosInstance = axios.create({
 // Add interceptors
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
+    console.log(` ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    console.error("Request error:", error);
+    return Promise.reject(error);
+  },
 );
 
 axiosInstance.interceptors.response.use(
-  function onFulfilled(response) {
-    // for any status code that lies withing range of 200
+  (response) => {
+    console.log(`${response.status} ${response.config.url}`);
     return response;
   },
-  function onRejected(error) {
+  (error) => {
     if (error.response?.status === 401) {
-      window.location.href("/login");
+      console.log("Unauthorized - redirecting to login");
     }
+    console.error("Response error:", error.response?.data || error.message);
     return Promise.reject(error);
   },
 );

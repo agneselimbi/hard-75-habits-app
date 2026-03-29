@@ -4,12 +4,15 @@ import config from "../config/config.js";
 export async function authenticateMiddleware(req, res, next) {
   //Extract token from headers
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  const token =
+    (authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null) ??
+    req.cookies?.token;
+
+  if (!token) {
     return res.status(401).json({ error: { message: "No token provided" } });
   }
   try {
     //Verify token validity
-    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, config.jwt.secret);
     req.user = decoded;
     next();
@@ -21,6 +24,8 @@ export async function authenticateMiddleware(req, res, next) {
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ error: { message: "Invalid token" } });
     }
-    return res.status(401).json({ error: { message: "Authentication failed" } });
+    return res
+      .status(401)
+      .json({ error: { message: "Authentication failed" } });
   }
 }

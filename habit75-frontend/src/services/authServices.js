@@ -1,78 +1,87 @@
 import axiosInstance from "./api";
 import Cookies from "js-cookie";
-
-impo;
 // Login function
 export async function Login(userEmail, userPassword) {
   try {
-    const url = `${import.meta.env.VITE_API_URL}/auth/login`;
-    const resp = axios.post(
-      url,
-      {
-        email: userEmail,
-        password: userPassword,
-      },
-      { withCredentials: true },
-    );
-    if (resp.ok) {
-      const data = await resp.json();
-      console.log("Login successful");
-      const userData = data.user;
-      return userData;
-    } else {
-      alert("Invalid credentials");
-      return {}
-    }
+    const url = "auth/login";
+    const resp = await axiosInstance.post(url, {
+      email: userEmail,
+      password: userPassword,
+    });
+    return resp?.data?.user;
   } catch (error) {
-    console.error("Error login in user", error.message);
-    window.location.href("login");
-    throw new Error("Login error", error.message)
+    if (error.response) {
+      const status = error.response.status;
+      const data = error.response.data?.error?.message;
+      if (status === 400 || status === 401 || status == 404) {
+        console.error("Login failed", error.message);
+      }
+      console.error(`Server error (${status}) :`, message);
+      throw new Error("Server error. Please try again.");
+    }
+    console.error("Network error", error.message);
+    throw new Error("Network error. Please check your connection.");
   }
 }
 
 // Register function
 
-export async function Register(userEmail, userPassword) {
+export async function Register(userEmail, userPassword, userName) {
   try {
-    const url = `${import.meta.env.VITE_API_URL}/auth/register`;
-    const resp = axios.post(
-      url,
-      {
-        email: userEmail,
-        password: userPassword,
-      },
-      { withCredentials: true },
-    );
-    if (resp.ok) {
-      const data = await resp.json();
-      console.log("Signup successful");
-      const userData = data.user;
-      return userData
-    } else {
-      alert("Unable to register user");
-      return {};
-    }
+    const url = "auth/register";
+    const resp = await axiosInstance.post(url, {
+      email: userEmail,
+      password: userPassword,
+      name: userName,
+    });
+    console.log("register response", resp);
+    return resp.data?.user;
   } catch (error) {
-    console.error("Error registering user", error.message);
-    window.location.href("register");
-    throw new Error("Error registering new user", error.message)
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.error?.message;
+
+      if (status === 400 || status === 409) {
+        console.error(`Registration failed:${message}`);
+        throw new Error(`Registration failed:${message}`);
+      }
+      console.error(`Server error (${status}) :`, message);
+      throw new Error("Server error. Please try again.");
+    }
+    console.error("Network error", error.message);
+    throw new Error("Network error. Please check your connection.");
   }
 }
 
 // Logout
 export async function Logout() {
-  window.location.href("login");
+  try {
+    const resp = await axiosInstance.post("/aut/logout");
+    console.log("User logged out successfully");
+  } catch (error) {
+    console.error("Error during logout", error.message);
+    throw error;
+  }
 }
 
 // get current User
-export async function getCurrentUser(userEmail, userPassword) {
+export async function getCurrentUser() {
   try {
-    const token = Cookies.get("token") 
-    if (!token) {
-      console.error("No user currently logged in");
-      window.location.href("login");
+    const resp = await axiosInstance.get("/auth/me");
+    console.log("response", resp);
+    return resp.data?.user;
+  } catch (error) {
+    console.log("error", error);
+
+    if (error.response?.status == 401) {
+      console.error("User not authenticated");
+      return null;
     }
-    // get user, password from cookie 
-    const {user, password} = 
-  } catch (error) {}
+    if (error.response?.status == 404) {
+      console.error("No user found");
+      return null;
+    }
+    console.error("Unable to retrieve current user");
+    window.location.href("/login");
+  }
 }
