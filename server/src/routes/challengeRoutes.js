@@ -405,5 +405,28 @@ export function createChallengeRoutes(prisma) {
     },
   );
 
+  router.get("/active", authenticateMiddleware, async (req, res) => {
+    try {
+      const activeChallenge = await prisma.challenges.findFirst({
+        user_id: req.user.id,
+        status: "active",
+      });
+      if (!activeChallenge) {
+        return res
+          .status(404)
+          .json({ error: { message: "No active challenge found for user" } });
+      }
+      return res.status(200).json({
+        message: "Active challenge retrieved",
+        data: activeChallenge,
+      });
+    } catch (error) {
+      console.error("Unable to retrieve active challenge", error);
+      return res
+        .status(500)
+        .json({ error: { message: "Unable to retrieve active challenge" } });
+    }
+  });
+
   return router;
 }

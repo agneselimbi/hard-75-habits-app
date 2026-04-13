@@ -7,6 +7,7 @@ import { History } from "./pages/history.jsx";
 import { Login } from "./pages/login.jsx";
 import { Progress } from "./pages/progress.jsx";
 import { Register } from "./pages/register.jsx";
+import Layout from "./components/Layout.jsx";
 
 import "./App.css";
 import AuthProvider from "./contexts/authContext.jsx";
@@ -28,37 +29,18 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
-              path="/dashboard"
               element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
+                <Layout />
+                // <ProtectedRoute>
+                //   <Layout />
+                // </ProtectedRoute>
               }
-            />
-            <Route
-              path="/checkin"
-              element={
-                <ProtectedRoute>
-                  <Checkin />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/history"
-              element={
-                <ProtectedRoute>
-                  <History />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/progress"
-              element={
-                <ProtectedRoute>
-                  <Progress />
-                </ProtectedRoute>
-              }
-            />
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/checkin" element={<Checkin />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="/histroy" element={<History />} />
+            </Route>
           </Routes>
         </AuthProvider>
       </BrowserRouter>

@@ -1,3 +1,13 @@
+import TodayProgressCard from "../components/todayProgressCard";
+import TodayStatsCard from "../components/todayStatsCard";
+import NextMileStoneCard from "../components/nextMileStoneCard";
+
 export function Dashboard() {
-  return <h1> Hello from Dashboard</h1>;
+  return (
+    <>
+      <TodayProgressCard />
+      <TodayStatsCard />
+      <NextMileStoneCard />
+    </>
+  );
 }
